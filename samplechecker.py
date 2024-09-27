@@ -143,17 +143,18 @@ class DirectoryTable(QTableWidget):
     def delete_file(self):
         selected_items = self.selectedItems()
         if selected_items:
-            item = selected_items[0]
-            file_path = item.data(Qt.ItemDataRole.UserRole)
-            if file_path and os.path.isfile(file_path):
-                os.remove(file_path)
-                self.update_table(os.path.dirname(file_path))
-            elif file_path and os.path.isdir(file_path):
-                QMessageBox.warning(
-                    self,
-                    "Delete Error",
-                    f"'{file_path}' is a directory and cannot be deleted.",
-                )
+            for item in selected_items:
+                if item.column() == 1:
+                    file_path = item.data(Qt.ItemDataRole.UserRole)
+                    if file_path and os.path.isfile(file_path):
+                        os.remove(file_path)
+                        self.update_table(os.path.dirname(file_path))
+                    elif file_path and os.path.isdir(file_path):
+                        QMessageBox.warning(
+                            self,
+                            "Delete Error",
+                            f"'{file_path}' is a directory and cannot be deleted.",
+                        )
 
     def handle_key_press(self, event):
         if event.key() == Qt.Key.Key_Delete:
