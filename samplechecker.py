@@ -54,7 +54,10 @@ class DirectoryTable(QTableWidget):
     def update_table(self, directory):
         if os.path.isdir(directory):
             files = sorted(os.listdir(directory))  # Sort files by name
-            self.setRowCount(len(files) + 1)  # Add one for the ".." entry
+            directories = [f for f in files if os.path.isdir(os.path.join(directory, f))]
+            files = [f for f in files if not os.path.isdir(os.path.join(directory, f))]
+            items = directories + files
+            self.setRowCount(len(items) + 1)  # Add one for the ".." entry
 
             # Add ".." entry to go to the parent directory
             icon = self.style().standardIcon(QStyle.StandardPixmap.SP_DirIcon)
@@ -68,7 +71,7 @@ class DirectoryTable(QTableWidget):
             item.setData(Qt.ItemDataRole.UserRole, os.path.dirname(directory))
             self.setItem(0, 1, item)
 
-            for row, file_name in enumerate(files, start=1):
+            for row, file_name in enumerate(items, start=1):
                 file_path = os.path.join(directory, file_name)
 
                 # Set file or directory icon using mime type
